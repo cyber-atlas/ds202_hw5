@@ -1,0 +1,36 @@
+---
+title: "hw5"
+author: "cyber-atlas"
+date: "April 9, 2019"
+output: html_document
+---
+
+```{r}
+library('dplyr')
+library('tidyverse')
+```
+
+First, let's get the dataset
+```{r}
+#The datasets gets saved in as data
+if (file.exists("alcohol.rds")) {
+  data <- readRDS("alcohol.rds")
+} else {
+  url <- "https://xdaiisu.github.io/ds202materials/data/ames.csv"
+  data <- readr::read_csv(url)
+  saveRDS(data, file="alcohol.rds")
+} 
+
+```
+# TODO tell prof that the numbering got messed up and skips to 3 that it says to push hw4.Rmd not, hw5
+
+I am assuming the skipped number was unitintentional
+
+2. 
+
+Extract the geographic latitude and longtitude and store in StateLocation
+```{r}
+
+State
+
+```
