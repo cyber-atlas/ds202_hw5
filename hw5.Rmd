@@ -58,7 +58,7 @@ data = separate(data=data, col="Date", into = c("Month", "Day", "Year"), sep="\\
 data$Month = as.numeric(data$Month)
 data$Day = as.numeric(data$Day)
 data$Year = as.numeric(data$Year)
-#str(data)
+str(data)
 
 ```
 
@@ -75,4 +75,44 @@ ggplot(data=subset(data, !is.na(c(Lat, Lon))), aes(x=Lat, y=Lon))+
 provide a visual vreakdown of the liquor categy 
 ```{r}
 
+#ggplot(data, aes(x=factor(data$`Category Name`), fill =  ))
+ggplot(data, aes(x='Volume Sold (Liters)', fill = data$`Category Name` ))+
+  geom_bar()+
+  coord_polar("y")+
+  theme(legend.position = 'none')
+
+#unique(data$`Category Name`)
+#After running unique we know the nuymber of categories
+
+#ggplot(data = subset(data$`Category Name`, 1:20), aes(x='Volume Sold (Liters)', fill = data$`Category Name` ))+
+  #coord_polar("y")+
+ # theme(legend.position = 'none')
+  
+
 ```
+
+4
+
+Find the daily sales liquor sales in Ames in 2018. Summarize number of sales, volume of liquor sold and amount of money spent. Plot volume sold by day (use a scatterplot of volume by day and facet by month). Describe any patterns.
+Find the dates for ISU football home games in Fall 2018. Can you see a pattern? 
+```{r}
+
+dataq5 <- filter(data, Year==2018 & City =='Ames')
+
+#dataq5
+
+q5sale <- dataq5 %>% group_by(Month, Day) %>% summarise(SumSales = sum(`Sale (Dollars)`))
+
+head(q5sale)
+
+q5volume <- dataq5 %>% group_by(Month, Day) %>% summarize(Sumvol = sum(`Volume Sold (Liters)`))
+
+head(q5volume)
+
+ggplot(q5volume, aes(x=Day, y=Sumvol))+
+  geom_point()+
+  stat_smooth()+
+  facet_wrap(~Month)
+
+```
+The amounts did not spike much on football games. Every weekend had a spike. Ames drank a lot most weekends
