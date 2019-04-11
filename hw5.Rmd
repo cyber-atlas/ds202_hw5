@@ -8,6 +8,7 @@ output: html_document
 ```{r}
 library('dplyr')
 library('tidyverse')
+library('ggplot2')
 ```
 
 First, let's get the dataset
@@ -21,16 +22,57 @@ if (file.exists("alcohol.rds")) {
   saveRDS(data, file="alcohol.rds")
 } 
 
-```
-# TODO tell prof that the numbering got messed up and skips to 3 that it says to push hw4.Rmd not, hw5
 
-I am assuming the skipped number was unitintentional
+#Take a look at the dataset
+head(data)
+
+```
 
 2. 
 
 Extract the geographic latitude and longtitude and store in StateLocation
 ```{r}
+#Using a regex to speperate the latitude and longtitude into different columns 
+data <- data %>% separate(col="Store Location", into=c("Address", "Lat", "Lon"), sep="([\\(\\,\\)])")  
 
-State
+head(data)
+```
+Check the variable types and change them
+
+```{r}
+data$Lon <- as.numeric(data$Lon)
+data$Lat <- as.numeric(data$Lat)
+data$"Category Name" <- as.factor(data$"Category Name")
+data$`Vendor Name` <- as.factor(data$`Vendor Name`)
+data$City <- as.factor(data$City)
+#str(data)
+
+head(data)
+
+```
+extract year month day and set them as numeric
+
+```{r}
+data = separate(data=data, col="Date", into = c("Month", "Day", "Year"), sep="\\/")
+
+data$Month = as.numeric(data$Month)
+data$Day = as.numeric(data$Day)
+data$Year = as.numeric(data$Year)
+#str(data)
+
+```
+
+3 
+
+Plot a scatter plot of lat and long locations
+```{r}
+#Plot all the  non NA points
+ggplot(data=subset(data, !is.na(c(Lat, Lon))), aes(x=Lat, y=Lon))+
+  geom_point()
+
+```
+
+provide a visual vreakdown of the liquor categy 
+```{r}
 
 ```

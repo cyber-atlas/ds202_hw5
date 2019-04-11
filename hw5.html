@@ -191,30 +191,107 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>library('dplyr')</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library('tidyverse')</code></pre>
+<pre><code>## -- Attaching packages -------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.1.0     v readr   1.3.1
+## v tibble  2.0.1     v purrr   0.2.5
+## v tidyr   0.8.2     v stringr 1.3.1
+## v ggplot2 3.1.0     v forcats 0.3.0</code></pre>
+<pre><code>## -- Conflicts ----------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library('ggplot2')</code></pre>
 <p>First, let’s get the dataset</p>
-<pre class="r"><code>if (file.exists(&quot;alcohol.rds&quot;)) {
+<pre class="r"><code>#The datasets gets saved in as data
+if (file.exists(&quot;alcohol.rds&quot;)) {
   data &lt;- readRDS(&quot;alcohol.rds&quot;)
 } else {
   url &lt;- &quot;https://xdaiisu.github.io/ds202materials/data/ames.csv&quot;
   data &lt;- readr::read_csv(url)
   saveRDS(data, file=&quot;alcohol.rds&quot;)
-} </code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_double(),
-##   `Invoice/Item Number` = col_character(),
-##   Date = col_character(),
-##   `Store Name` = col_character(),
-##   Address = col_character(),
-##   City = col_character(),
-##   `Store Location` = col_character(),
-##   County = col_character(),
-##   `Category Name` = col_character(),
-##   `Vendor Number` = col_character(),
-##   `Vendor Name` = col_character(),
-##   `Item Description` = col_character()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
+} 
+
+?
+#Take a look at the dataset
+head(data)</code></pre>
+<pre><code>## starting httpd help server ... done</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li></li>
+</ol>
+<p>Extract the geographic latitude and longtitude and store in StateLocation</p>
+<pre class="r"><code>#Using a regex to speperate the latitude and longtitude into different columns 
+data &lt;- data %&gt;% separate(col=&quot;Store Location&quot;, into=c(&quot;Address&quot;, &quot;Lat&quot;, &quot;Lon&quot;), sep=&quot;([\\(\\,\\)])&quot;)  </code></pre>
+<pre><code>## Warning: Expected 3 pieces. Additional pieces discarded in 335934 rows [1,
+## 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
+<pre><code>## Warning: Expected 3 pieces. Missing pieces filled with `NA` in 46099 rows
+## [88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104,
+## 105, 106, 107, ...].</code></pre>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>## # A tibble: 6 x 25
+##   `Invoice/Item N~ Date  `Store Number` `Store Name` City  `Zip Code`
+##   &lt;chr&gt;            &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      &lt;dbl&gt;
+## 1 INV-15386000001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 2 INV-15386000002  10/3~           4129 Cyclone Liq~ Ames       50010
+## 3 INV-15386200001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 4 INV-15386600001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 5 INV-15397500001  10/3~           3524 Sam's Club ~ Ames       50010
+## 6 INV-15397600001  10/3~           3524 Sam's Club ~ Ames       50010
+## # ... with 19 more variables: `County Number` &lt;dbl&gt;, Address &lt;chr&gt;,
+## #   Lat &lt;chr&gt;, Lon &lt;chr&gt;, County &lt;chr&gt;, Category &lt;dbl&gt;, `Category
+## #   Name` &lt;chr&gt;, `Vendor Number` &lt;chr&gt;, `Vendor Name` &lt;chr&gt;, `Item
+## #   Number` &lt;dbl&gt;, `Item Description` &lt;chr&gt;, Pack &lt;dbl&gt;, `Bottle Volume
+## #   (ml)` &lt;dbl&gt;, `State Bottle Cost` &lt;dbl&gt;, `State Bottle Retail` &lt;dbl&gt;,
+## #   `Bottles Sold` &lt;dbl&gt;, `Sale (Dollars)` &lt;dbl&gt;, `Volume Sold
+## #   (Liters)` &lt;dbl&gt;, `Volume Sold (Gallons)` &lt;dbl&gt;</code></pre>
+<p>Check the variable types and change them</p>
+<pre class="r"><code>data$Lon &lt;- as.numeric(data$Lon)
+data$Lat &lt;- as.numeric(data$Lat)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>data$&quot;Category Name&quot; &lt;- as.factor(data$&quot;Category Name&quot;)
+data$`Vendor Name` &lt;- as.factor(data$`Vendor Name`)
+data$City &lt;- as.factor(data$City)
+#str(data)
+
+head(data)</code></pre>
+<pre><code>## # A tibble: 6 x 25
+##   `Invoice/Item N~ Date  `Store Number` `Store Name` City  `Zip Code`
+##   &lt;chr&gt;            &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;        &lt;fct&gt;      &lt;dbl&gt;
+## 1 INV-15386000001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 2 INV-15386000002  10/3~           4129 Cyclone Liq~ Ames       50010
+## 3 INV-15386200001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 4 INV-15386600001  10/3~           4129 Cyclone Liq~ Ames       50010
+## 5 INV-15397500001  10/3~           3524 Sam's Club ~ Ames       50010
+## 6 INV-15397600001  10/3~           3524 Sam's Club ~ Ames       50010
+## # ... with 19 more variables: `County Number` &lt;dbl&gt;, Address &lt;chr&gt;,
+## #   Lat &lt;dbl&gt;, Lon &lt;dbl&gt;, County &lt;chr&gt;, Category &lt;dbl&gt;, `Category
+## #   Name` &lt;fct&gt;, `Vendor Number` &lt;chr&gt;, `Vendor Name` &lt;fct&gt;, `Item
+## #   Number` &lt;dbl&gt;, `Item Description` &lt;chr&gt;, Pack &lt;dbl&gt;, `Bottle Volume
+## #   (ml)` &lt;dbl&gt;, `State Bottle Cost` &lt;dbl&gt;, `State Bottle Retail` &lt;dbl&gt;,
+## #   `Bottles Sold` &lt;dbl&gt;, `Sale (Dollars)` &lt;dbl&gt;, `Volume Sold
+## #   (Liters)` &lt;dbl&gt;, `Volume Sold (Gallons)` &lt;dbl&gt;</code></pre>
+<p>extract year month day and set them as numeric</p>
+<pre class="r"><code>data = separate(data=data, col=&quot;Date&quot;, into = c(&quot;Month&quot;, &quot;Day&quot;, &quot;Year&quot;), sep=&quot;\\/&quot;)
+
+data$Month = as.numeric(data$Month)
+data$Day = as.numeric(data$Day)
+data$Year = as.numeric(data$Year)
+#str(data)</code></pre>
+<p>3</p>
+<p>Plot a scatter plot of lat and long locations</p>
+<pre class="r"><code>ggplot(data, aes(x=Lat, y=Lon))+
+  geom_point()+
+  coord_fixed()</code></pre>
+<pre><code>## Warning: Removed 46822 rows containing missing values (geom_point).</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
 
 
 
